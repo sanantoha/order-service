@@ -1,0 +1,21 @@
+syntax="proto3";
+
+package order;
+
+service Order {
+  rpc Place (OrderRequest) returns (OrderResponse);
+}
+
+message OrderRequest {
+  repeated OrderLinItems items = 1;
+}
+
+message OrderLinItems {
+  string sku_code = 1;
+  int64 price = 2;
+  int64 quantity = 3;
+}
+
+message OrderResponse {
+  string order_number = 1;
+}
