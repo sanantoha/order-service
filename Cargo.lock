@@ -1210,6 +1210,7 @@ dependencies = [
  "itertools",
  "log",
  "prost",
+ "prost-types",
  "serde",
  "serde_json",
  "sqlx",

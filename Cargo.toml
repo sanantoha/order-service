@@ -17,6 +17,7 @@ tonic-reflection = "0.12.1"
 sqlx = { version = "0.8.2", features = ["mysql", "runtime-tokio-native-tls", "chrono", "bigdecimal"] }
 itertools = "0.13.0"
 uuid = { version = "1.4", features = ["v4"] }
+prost-types = "0.13.3"
 
 [build-dependencies]
 tonic-build = "0.12.1"

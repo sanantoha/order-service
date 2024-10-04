@@ -2,15 +2,18 @@ syntax="proto3";
 
 package order;
 
+import "google/protobuf/timestamp.proto";
+
 service Order {
   rpc Place (OrderRequest) returns (OrderResponse);
+  rpc GetOrderList (Empty) returns (OrderListResponse);
 }
 
 message OrderRequest {
-  repeated OrderLinItems items = 1;
+  repeated OrderLineItems items = 1;
 }
 
-message OrderLinItems {
+message OrderLineItems {
   string sku_code = 1;
   int64 price = 2;
   int64 quantity = 3;
@@ -18,4 +21,24 @@ message OrderLinItems {
 
 message OrderResponse {
   string order_number = 1;
+}
+
+message Empty {}
+
+message OrderEntityResponse {
+  int64 order_id = 1;
+  string order_number = 2;
+  google.protobuf.Timestamp created_at = 3;
+  repeated OrderEntityLineItems items = 4;
+}
+
+message OrderEntityLineItems {
+  int64 order_line_item_id = 1;
+  string sku_code = 2;
+  int64 price = 3;
+  int64 quantity = 4;
+}
+
+message OrderListResponse {
+  repeated OrderEntityResponse orders = 1;
 }
