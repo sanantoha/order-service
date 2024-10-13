@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use itertools::Itertools;
 use sqlx::{MySql, Pool, Transaction, Row};
 use sqlx::types::chrono::{DateTime, Utc};
 use crate::error::Error;
@@ -58,7 +59,6 @@ impl OrderRepository {
                 o.id AS order_id, o.order_number, o.created_at, oi.id AS order_item_id, oi.sku_code, oi.price, oi.quantity
             FROM `order-service`.`t_orders` AS o
                 INNER JOIN `order-service`.`t_order_line_items` AS oi ON o.id = oi.order_id
-            ORDER BY o.created_at ASC
         "#;
 
         let rows = sqlx::query(order_query).fetch_all(&self.pool).await?;
@@ -92,7 +92,7 @@ impl OrderRepository {
 
             order.items.push(order_item);
         }
-        let res: Vec<Order> = cache.into_values().collect();
+        let res: Vec<Order> = cache.into_values().sorted().collect();
 
         Ok(res)
     }
