@@ -96,4 +96,31 @@ impl OrderRepository {
 
         Ok(res)
     }
+
+    pub async fn delete(&self, order_id: i64) -> Result<bool, Error> {
+        let mut transaction: Transaction<'_, MySql> = self.pool.begin().await?;
+
+        let order_delete_query = r#"
+            DELETE FROM `order-service`.`t_orders` WHERE id = ?
+        "#;
+
+        let order_line_items_delete_query = r#"
+            DELETE FROM `order-service`.`t_order_line_items` WHERE order_id = ?
+        "#;
+
+        let _ = sqlx::query(order_line_items_delete_query)
+            .bind(order_id)
+            .execute(&mut *transaction)
+            .await?;
+
+        let query_result = sqlx::query(order_delete_query)
+            .bind(order_id)
+            .execute(&mut *transaction)
+            .await?;
+
+        let rows_affected = query_result.rows_affected();
+        transaction.commit().await?;
+
+        Ok(rows_affected > 0)
+    }
 }

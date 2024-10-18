@@ -1,7 +1,7 @@
 use log::{info, error};
 use tonic::{Request, Response, Status};
 use crate::order_repository::OrderRepository;
-use crate::order_service::proto::{OrderRequest, OrderResponse, OrderListResponse, Empty, OrderEntityResponse, OrderEntityLineItems};
+use crate::order_service::proto::{OrderRequest, OrderResponse, OrderListResponse, Empty, OrderEntityResponse, OrderEntityLineItems, DeleteOrderRequest, DeleteOrderResponse};
 use itertools::Itertools;
 use uuid::Uuid;
 use crate::models::OrderLineItems;
@@ -87,6 +87,25 @@ impl Order for OrderService {
         info!("get_order_list successfully returned orders={}", order_responses.len());
         Ok(Response::new(OrderListResponse {
             orders: order_responses
+        }))
+    }
+
+    async fn delete_order(&self, request: Request<DeleteOrderRequest>) -> Result<Response<DeleteOrderResponse>, Status> {
+        let order_request = request.get_ref();
+        info!("Received delete_order request order_id={}", order_request.order_id);
+
+        let is_deleted = self.repository.delete(order_request.order_id).await.map_err(|err| {
+            error!("Failed to delete_order {:?}", err);
+            Status::internal(format!("could not delete order_id={}", order_request.order_id))
+        })?;
+
+        let mut deleted_msg = "deleted";
+        if !is_deleted {
+            deleted_msg = "not deleted";
+        }
+        info!("order_id={} is {}", order_request.order_id, deleted_msg);
+        Ok(Response::new(DeleteOrderResponse {
+            is_deleted
         }))
     }
 }

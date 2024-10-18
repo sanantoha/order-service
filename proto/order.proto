@@ -7,6 +7,7 @@ import "google/protobuf/timestamp.proto";
 service Order {
   rpc Place (OrderRequest) returns (OrderResponse);
   rpc GetOrderList (Empty) returns (OrderListResponse);
+  rpc DeleteOrder (DeleteOrderRequest) returns (DeleteOrderResponse);
 }
 
 message OrderRequest {
@@ -41,4 +42,12 @@ message OrderEntityLineItems {
 
 message OrderListResponse {
   repeated OrderEntityResponse orders = 1;
+}
+
+message DeleteOrderRequest {
+  int64 order_id = 1;
+}
+
+message DeleteOrderResponse {
+  bool is_deleted = 1;
 }
